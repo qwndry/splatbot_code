@@ -1,0 +1,2008 @@
+const BOT_ID = process.env.GROUPME_BOT_ID //aws has environment variables that you can call with process.env.[ENVIRONMENT VARIABLE]
+let payload = {};
+//fin, qwndry, josiah, pico, gunhat, michael (owner), angel, naomi, shivers, conway
+const adminIDS = [];//you would put admin ids here to do admin things (no im not gonna upload them to github)
+const GROUP_ID = process.env.SPLATCHAT_BOT_ID
+const ACCESS_TOKEN = process.env.GROUPME_ACCESS_TOKEN
+
+const silli_keywords = [
+  'job', 'workplace', 'employment', 'salary', 'boss', 
+  'paycheck', 'w-2', ' rent ', 'tax', 'office', 
+  'paperwork', ' hr ', 'human resources', 'commute', 
+  'gas prices', 'resume', '9 to 5', 'application', 
+  'budget', 'mortgage', 'inflation', 'loan', 'loans', 'apy',
+];
+let silli_odds = 20 //for now does nothing but itf will do smth :D
+
+//big weapon list in this form -> [weapon name, sub name, special name, class type]
+  const weapons = {
+    // Shooters
+    1: ["sploosh", "curling", "hammer", "shooter"],
+    2: ["sploosh neo", "beakon", "whale", "shooter"],
+    3: ["splattershot jr", "splat", "bubble", "shooter"],
+    4: ["custom splattershot jr", "torpedo", "wave", "shooter"],
+    5: ["splash-o-matic", "burst", "crab", "shooter"],
+    6: ["neo splash", "suction", "strikes", "shooter"],
+    7: ["splash gck-o", "mist", "storm", "shooter"],
+    8: ["aerospray mg", "fizzy", "slider", "shooter"],
+    9: ["aerospray rg", "sprinkler", "booyah", "shooter"],
+    10: ["colorz aerospray", "burst", "screen", "shooter"],
+    11: ["splattershot", "suction", "trizooka", "shooter"],
+    12: ["tentatek splattershot", "splat", "strikes", "shooter"],
+    13: ["glamorz splattershot", "burst", "kraken", "shooter"],
+    14: [".52 gal", "wall", "whale", "shooter"],
+    15: [".52 gal deco", "curling",  "screen", "shooter"],
+    16: ["n-zap 85", "suction", "cooler", "shooter"],
+    17: ["n-zap 89", "auto", "chumps", "shooter"],
+    18: ["splattershot pro", "dart", "crab", "shooter"],
+    19: ["forge splattershot pro", "suction", "booyah", "shooter"],
+    20: ["splattershot pro frzn", "splat", "missiles", "shooter"],
+    21: [".96 gal", "sprinkler", "vac", "shooter"],
+    22: [".96 gal deco", "wall", "kraken", "shooter"],
+    23: ["clawz .96 gal", "dart", "cooler", "shooter"],
+    24: ["jet squelcher", "dart", "vac", "shooter"],
+    25: ["custom jet squelcher", "mist", "storm", "shooter"],
+    26: ["jet squelcher cobr", "burst", "splashdown", "shooter"],
+    27: ["splattershot nova", "sensor", "whale", "shooter"],
+    28: ["anaki splattershot nova", "mine", "jet", "shooter"],
+    43: ["squeezer", "wall", "zooka", "shooter"],
+    44: ["foil squeezer", "auto", "screen", "shooter"],
+    45: ["h-3 nozzlenose", "sensor", "cooler", "shooter"],
+    46: ["h-3 nozzlenose d", "wall", "bubble", "shooter"],
+    47: ["h-3 nozzlenose vip-r", "suction", "strikes", "shooter"],
+    48: ["l-3 nozzlenose", "curling", "crab", "shooter"],
+    49: ["l-3 nozzlenose d", "burst", "hammer", "shooter"],
+    50: ["glitterz l-3 nozzlenose", "splat", "jet", "shooter"],
+  
+    //done
+    //blasters
+    29: ["luna blaster", "splat", "zipcaster", "blaster"],
+    30: ["luna blaster neo", "fizzy", "stamp", "blaster"],
+    31: ["blaster", "auto", "bubble", "blaster"],
+    32: ["custom blaster", "sensor", "splash", "blaster"],
+    33: ["range blaster", "suction", "wave", "blaster"],
+    34: ["custom range blaster", "splat", "kraken", "blaster"],
+    35: ["gleamz blaster", "beakon", "crab", "blaster"],
+    36: ["rapid blaster", "mine", "strikes", "blaster"],
+    37: ["rapid blaster deco", "torpedo", "jet", "blaster"],
+    38: ["rapid blaster pro", "mist", "vac", "blaster"],
+    39: ["rapid blaster pro deco", "dart", "whale", "blaster"],
+    40: ["rapid blaster pro wntr", "suction", "cooler", "blaster"],
+    41: ["clash blaster", "splat", "zooka", "blaster"],
+    42: ["clash blaster neo", "curling", "chumps", "blaster"],
+  
+    //done
+    //rollers
+    51: ["carbon roller", "auto", "zipcaster", "roller"],
+    52: ["carbon roller deco", "burst", "zooka", "roller"],
+    53: ["carbon roller angl", "fizzy", "chumps", "roller"],
+    54: ["splat roller", "curling", "bubble", "roller"],
+    55: ["krak-on splat roller", "beakon", "kraken", "roller"],
+    56: ["dynamo roller", "sprinkler", "cooler", "roller"],
+    57: ["gold dynamo roller", "splat", "chumps", "roller"],
+    58: ["starz dynamo roller", "sensor", "whale", "roller"],
+    59: ["flingza roller", "mine", "missiles", "roller"],
+    60: ["foil flingza roller", "suction", "screen", "roller"],
+    61: ["big swig roller", "wall", "vac", "roller"],
+    62: ["big swig roller express", "dart", "storm", "roller"],
+    63: ["planetz big swig roller", "torpedo", "splashdown", "roller"],
+  
+  
+    //done
+    // Chargers
+    64: ["splat charger", "splat", "vac", "charger"],
+    65: ["splat charger camo", "sprinkler", "crab", "charger"],
+    66: ["z+f splat charger", "wall", "strikes", "charger"],
+    67: ["splatterscope", "splat", "vac","charger"],
+    68: ["splatterscope camo", "sprinkler", "crab", "charger"],
+    69: ["z+f splatterscope", "wall", "strikes", "charger"],
+    70: ["e-liter 4k", "mine", "wave", "charger"],
+    71: ["custom e-liter 4k", "beakon", "kraken", "charger"],
+    72: ["e-liter 4k scope", "mine", "wave", "charger"],
+    73: ["custom e-liter 4k scope", "beakon", "kraken", "charger"],
+    74: ["goo tuber", "torpedo", "missiles", "charger"],
+    75: ["custom goo tuber", "fizzy", "hammer", "charger"],
+    76: ["bamboozler 14 mk i", "auto", "whale", "charger"],
+    77: ["bamboozler 14 mk ii", "fizzy", "chumps", "charger"],
+    78: ["snipewriter 5h", "sprinkler", "cooler", "charger"],
+    79: ["snipewriter 5b", "wall", "storm", "charger"],
+  
+    //done
+    // Sloshers
+    80: ["slosher", "splat", "strikes", "slosher"],
+    81: ["slosher deco", "dart", "zipcaster", "slosher"],
+    82: ["tri-slosher", "mist", "jet", "slosher"],
+    83: ["tri-slosher nouveau", "fizzy", "cooler", "slosher"],
+    84: ["sloshing machine", "fizzy", "booyah", "slosher"],
+    85: ["sloshing machine neo", "sensor", "zooka", "slosher"],
+    86: ["bloblobber", "sprinkler", "storm", "slosher"],
+    87: ["bloblobber deco", "dart", "kraken", "slosher"],
+    88: ["explosher", "sensor", "storm", "slosher"],
+    89: ["custom explosher", "wall", "splash", "slosher"],
+    90: ["dread wringer", "suction", "slider", "slosher"],
+    91: ["dread wringer d(ogwater)", "beakon", "wave", "slosher"],
+    92: ["hornz dread wringer", "curling", "crab", "slosher"],
+  
+    //done
+    // Dualies
+    93: ["splat dualies", "suction", "crab", "dualies"],
+    94: ["enperry splat dualies", "curling", "splashdown", "dualies"],
+    95: ["dualie squelchers", "splat", "wave", "dualies"],
+    96: ["custom dualie squelchers", "beakon", "chumps", "dualies"],
+    97: ["hoofz dualie squelchers", "sensor", "screen", "dualies"],
+    98: ["twinklez splat dualies", "fizzy", "bubble", "dualies"],
+    99: ["dark tetra dualies", "auto", "slider", "dualies"],
+    100: ["light tetra dualies", "sprinkler", "zipcaster", "dualies"],
+    101: ["dapple dualies", "beakon", "cooler", "dualies"],
+    102: ["dapple dualies nouveau", "torpedo", "slider", "dualies"],
+    103: ["dapple dualies noct", "splat", "whale", "dualies"],
+    104: ["glooga dualies", "wall", "booyah", "dualies"],
+    105: ["glooga dualies deco", "sensor", "zooka", "dualies"],
+    106: ["douser dualies ff", "mine", "whale", "dualies"],
+    107: ["custom douser dualies ff", "burst", "strikes", "dualies"],
+  
+    // Brellas
+    108: ["splat brella", "sprinkler", "strikes", "brella"],
+    109: ["sorella brella", "auto", "jet", "brella"],
+    110: ["tenta brella", "beakon", "vac", "brella"],
+    111: ["tenta sorella brella", "mine", "trizooka", "brella"],
+    112: ["tenta brella crem", "mist", "chumps", "brella"],
+    113: ["undercover brella", "mine", "slider", "brella"],
+    114: ["undercover sorella brella", "torpedo", "screen", "brella"],
+    115: ["patternz undercover brella", "curling", "whale", "brella"],
+    116: ["recycled brella 24 mk i", "dart", "bubble", "brella"],
+    117: ["recycled brella 24 mk ii", "mist", "splashdown", "brella"],
+  
+    //done
+    // Stringers
+    118: ["tri-stringer", "mist", "whale", "stringer"],
+    119: ["inkline tri-stringer", "sprinkler", "chumps", "stringer"],
+    120: ["bulbz tri-stringer", "dart", "jet", "stringer"],
+    121: ["reef-lux", "curling", "missiles", "stringer"],
+    122: ["reef-lux deco", "wall", "slider", "stringer"],
+    123: ["reef-lux milk", "torpedo", "booyah", "stringer"],
+    124: ["wellstring v", "auto", "hammer", "stringer"],
+    125: ["custom wellstring v", "sensor", "wave", "stringer"],
+  
+    //done
+    // Splatanas
+    126: ["splatana wiper", "torpedo", "hammer", "splatana"],
+    127: ["splatana wiper deco", "beakon", "missiles", "splatana"],
+    128: ["splatana wiper rust", "curling", "zooka", "splatana"],
+    129: ["splatana stamper", "burst", "zipcaster", "splatana"],
+    130: ["splatana stamper nouveau", "mist", "crab", "splatana"],
+    131: ["stickerz splatana stamper", "auto", "booyah", "splatana"],
+    132: ["mint decavitator", "suction", "bubble", "splatana"],
+    133: ["charcoal decavitator", "wall", "jet", "splatana"],
+  
+    //done
+    // Brushes
+    134: ["inkbrush", "splat", "whale", "brush"],
+    135: ["inkbrush nouveau", "mine", "hammer", "brush"],
+    136: ["octobrush", "suction", "zipcaster", "brush"],
+    137: ["octobrush nouveau", "beakon", "storm", "brush"],
+    138: ["painbrush", "curling", "wave", "brush"],
+    139: ["painbrush nouveau", "sensor", "missiles", "brush"],
+    140: ["cometz octobrush", "auto", "kraken", "brush"],
+    141: ["painbrush brnz", "wall", "zooka", "brush"],
+  
+    //done
+    //splatlings
+    142: ["heavy splatling", "sprinkler", "wave", "splatling"],
+    143: ["heavy splatling deco", "sensor", "kraken", "splatling"],
+    144: ["hydra splatling", "auto", "booyah", "splatling"],
+    145: ["custom hydra splatling", "mine", "screen", "splatling"],
+    146: ["mini splatling", "burst", "hammer", "splatling"],
+    147: ["nautilus 47", "sensor", "storm", "splatling"],
+    148: ["ballpoint splatling", "fizzy", "jet", "splatling"],
+    149: ["ballpoint splatling nouveau", "mine", "vac", "splatling"],
+    150: ["zink mini splatling", "mist", "bubble", "splatling"],
+    151: ["nautilus 79", "mist", "bubble", "splatling"],
+    152: ["mini splatling rtlr", "beakon", "zooka", "splatling"],
+    153: ["torrentz hydra splatling", "sprinkler", "bubble", "splatling"],
+    154: ["heavy edit splatling", "curling", "cooler", "splatling"],
+    155: ["heavy edit splatling nouveau", "splat", "crab", "splatling"],  
+    //the poor forgotten sblasts
+    156: ["s-blast 92", "sprinkler", "slider", "blaster"],
+    157: ["s-blast 91", "burst", "booyah", "blaster"],
+
+    //story mode weapons
+    158: ["hero shot replica", "suction", "zooka", "shooter"],
+    159: ["octo shot replica", "splat", "strikes", "shooter"],
+    160: ["order shot replica","suction","zooka","shooter"],
+    161: ["order blaster replica","splat","zipcaster","blaster"],
+    162: ["order roller replica","curling","bubble","roller"],
+    163: ["orderbrush replica","suction","zipcaster","brush"],
+    164: ["order charger replica","splat","vac","charger"],
+    165: ["order slosher replica","splat","strikes","slosher"],
+    166: ["order splatling replica","sprinkler","wave","splatling"],
+    167: ["order dualie replicas","suction","crab","dualies"],
+    168: ["order brella replica","splat","strikes","brella"],
+    169: ["order stringer replica","mist","whale","stringer"],
+    170: ["order splatana replica","burst","zipcaster","splatana"],
+
+    //poor forgotten squiffers
+    171: ["classic squiffer","sensor","bubble","charger"],
+    172: ["new squiffer","auto","zipcaster","charger"],
+
+    //poor forgottern tri-slosher ash-n
+    173: ["tri-slosher ash-n","splat","screen","slosher"],
+
+  };
+
+//idk what this is for
+import { SSMClient, GetParameterCommand, PutParameterCommand } from "@aws-sdk/client-ssm";
+
+//s3 was where i was gonna store stuff for !hear so thats why this is here
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+
+//i havent done anything with https yet but it would be usefull to have
+import https from 'https';
+
+const s3Client = new S3Client({}); 
+
+const ssm = new SSMClient({ region: "us-east-2" });
+
+// async function getMemory() {
+//   const cmd = new GetParameterCommand({
+//     Name: "/bot/memory"
+//   });
+
+//   const res = await ssm.send(cmd);
+//   return res.Parameter.Value;
+// }
+
+// async function setMemory(value) {
+//   const cmd = new PutParameterCommand({
+//     Name: "/bot/memory",
+//     Value: value,
+//     Overwrite: true
+//   });
+
+//   await ssm.send(cmd);
+// }
+
+// async function turnOff() {
+//   const val = new PutParameterCommand({
+//     Name: "/bot/on",
+//     Value: "false",
+//     Overwrite: true,
+//     Type: "String"
+//   });
+
+//   await ssm.send(val);
+// }
+
+// async function turnOn() {
+//   const val = new PutParameterCommand({
+//     Name: "/bot/on",
+//     Value: "true",
+//     Overwrite: true,
+//     Type: "String"
+//   });
+
+//   await ssm.send(val);
+// }
+
+// async function isOn() {
+
+//   const cmd = new GetParameterCommand({ Name: "/bot/on" });
+//   const res = await ssm.send(cmd);
+//   console.log("Raw /bot/on value:", res.Parameter.Value);
+//   return res.Parameter.Value === 'true';
+
+// }
+
+async function respond() {
+  const response = await fetch('https://api.groupme.com/v3/bots/post', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  console.log('GroupMe response:', await response.text());
+  return { statusCode: 202, body: 'Accepted' };
+}
+
+export const handler = async (event) => {
+  try {
+    const body = JSON.parse(event.body || '{}');
+
+    if (!body || !body.text) {
+      return { statusCode: 400, body: 'Invalid request' };
+    }
+
+    //dont recieve messsages from bots
+    if (body.sender_type === 'bot') {
+      return { statusCode: 200, body: 'Ignored bot message' };
+    }
+    
+    // check that system messages are from groupme 
+    if (body.sender_type === 'system' || body.sender_id === 'system') {
+      const text = body.text ? body.text.trim() : "";
+
+      // safety-net to make sure that there actually is text there
+      if (!text) return { statusCode: 200, body: 'Empty system message ignored' };
+    
+      let joinedName = "";
+      let action = "";
+    
+      // (pt. 1 identifying keyword and assigning an action with some redundancies cause groupme borks sometimes)
+      if (text.includes(" edited ")) {
+        action = "edited";
+      } else if (text.includes(" has rejoined ")) {
+        action = "rejoined";
+        joinedName = text.split(" has rejoined ")[0].trim();
+      } else if (text.includes(" rejoined ")) { 
+        action = "rejoined";
+        joinedName = text.split(" rejoined ")[0].trim();
+      } else if (text.includes(" has left ")) {
+        action = "left";
+        joinedName = text.split(" has left ")[0].trim();
+      } else if (text.includes(" left ")) { 
+        action = "left";
+        joinedName = text.split(" left ")[0].trim();
+      } else if (text.includes(" has joined ")) {
+        action = "joined";
+        joinedName = text.split(" has joined ")[0].trim();
+      } else if (text.includes(" joined ")) { 
+        action = "joined";
+        joinedName = text.split(" joined ")[0].trim();
+      } else if (text.includes(" was added ")) {
+        action = "was added";
+        joinedName = text.split(" was added ")[0].trim();
+      } else if (text.includes(" admin ")) {
+        action = "admin";
+        // groupme is weird about admins and can do '___ was made admin' or '___ is now an admin' so thats why theres an extra text.split
+        if (text.includes(" is ")) joinedName = text.split(" is ")[0].trim();
+        else if (text.includes(" was ")) joinedName = text.split(" was ")[0].trim();
+        else joinedName = text.split(" ")[0].trim();
+      } else if (text.includes(" removed ")) {
+        action = "removed";
+      }
+        else {
+        // theres a whole lot of other system messages so this is here so bot doesn't bork
+        return { statusCode: 200, body: 'Unrelated system message ignored' };
+      }
+    
+      // (pt. 2 building the message based on action) also im not doing }
+      if(action === "edited") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `ᵐᶦⁿᵒʳ ˢᵖᵉˡˡᶦⁿᵍ ᵐᶦˢᵗᵃᵏᵉ`,
+        };
+        await respond();
+      }
+      else if (action === "rejoined") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `welcome back, ${joinedName}! you were missed!`,
+          attachments: [
+          ]
+        };
+        await respond();
+      } 
+      else if (action === "left") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `see ya later, ${joinedName}. hope you come back soon!`,
+          attachments: [
+          ]
+        };
+        await respond();
+      } 
+      else if (action === "joined" || action === "was added") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `welcome in, ${joinedName}! please read the rules and join the pool 'splatgroup'`,
+          attachments: [
+          ]
+        };
+        await respond();
+      } 
+      else if (action === "admin") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `congratulations ${joinedName}, you are our newest admin!`,
+          attachments: [
+          ]
+        };
+        await respond();
+      }
+      else if (action === "removed") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `Emergency protocols initiated. Test subject removed.`,
+          attachments: [
+          ]
+        };
+        await respond();
+      }
+    
+      return { statusCode: 200, body: 'Handled system message' };
+    }
+
+    console.log(body.sender_id, body.name);
+
+    //a thing for random weapon generation
+    function rw2() {
+      const values = Object.values(weapons);
+      const randomIndex = Math.floor(Math.random() * values.length);
+      const weapon = values[randomIndex];
+      return weapon[0];
+    }
+    
+    function rwByClass(cls) {
+      const values = Object.values(weapons);
+      const list = values.filter(w => w[3] === cls).map(w => w[0]);
+      return list[Math.floor(Math.random() * list.length)];
+    }
+    
+    function rwBySub(sub) {
+      const values = Object.values(weapons);
+      const list = values.filter(w => w[1] === sub).map(w => w[0]);
+      return list[Math.floor(Math.random() * list.length)];
+    }
+    
+    function rwBySpecial(special) {
+      const values = Object.values(weapons);
+      const list = values.filter(w => w[2] === special).map(w => w[0]);
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function isAdmin(){
+      for(var i = 0; i < adminIDS.length; i++){
+        if (body.sender_id === adminIDS[i]) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    //retrieve messages
+    const sensitive_text = body.text;
+    const text = body.text.toLowerCase();
+  
+    // if(text.startsWith('!on') && isAdmin() && !await isOn()){
+    //   payload = {
+    //     bot_id: BOT_ID,
+    //     text: `O.R.C.A. is reactivated`,
+    //     attachments: [
+    //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+    //     ],
+    //   };
+    //   turnOn();
+    //   await respond();
+    // }    
+
+    //sillis
+    if (!text.startsWith('!')) {
+      if (text.includes('crazy')){
+        const randnum = Math.floor(Math.random() * 1000);
+        if (randnum > 850){
+          payload = {
+            bot_id: BOT_ID,
+            text: `crazy?`,
+            attachments: [
+              { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            ],
+          }
+          await respond();
+        }
+      } 
+      else if (silli_keywords.some(silli_keyword => text.includes(silli_keyword)) || (silli_keywords.some(silli_keyword => text.startsWith(silli_keyword)))){
+        let responses = ['please censor yourself, your words are EXTREMELY harmful', 'D:', 'boo', '👎', '*sob*','BANNED','thats super scary '];
+        let response = responses[Math.floor(Math.random() * responses.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: response,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+      else if (text.includes(' mods ban ') || (text.startsWith('mods ban ')) || (text === ('mods ban'))){
+        payload = {
+          bot_id: BOT_ID,
+          text: `🫡 🫡 🫡`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+    }
+
+    //eliminate non commands
+    if (text.startsWith('!')){
+
+      // if(text.startsWith('!off') && isAdmin()){
+      //   payload = {
+      //     bot_id: BOT_ID,
+      //     text: `O.R.C.A. will be turned off`,
+      //     attachments: [
+      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+      //     ],
+      //   };
+      //   turnOff();
+      //   await respond();
+      // }
+
+      // if (text.startsWith('!add') && isAdmin()) {
+      //   const extra = body.text.slice(5);
+      
+      //   const old = await getMemory();
+      //   const updated = old + "\n" + extra;
+      
+      //   await setMemory(updated);
+      
+      //   payload = {
+      //     bot_id: BOT_ID,
+      //     text: `updated to: ${updated}`,
+      //     attachments: [
+      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+      //     ],
+      //   };
+      
+      //   await respond();
+      // }
+
+      // if (text.startsWith('!recall')  && isAdmin()) {
+      //   const extra = body.text.slice(7);
+
+      
+      //   const mem = await getMemory();
+      
+      //   payload = {
+      //    bot_id: BOT_ID,
+      //    text: `memory: ${mem}`,
+      //    attachments: [
+      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+      //    ],
+      //   };
+      
+      //   await respond();
+      // }
+
+      // if (text.startsWith('!reset') && isAdmin()) {
+      //   const extra = body.text.slice(7);
+      
+      //   const old = await getMemory();
+      //   const updated = " ";
+      
+      //   await setMemory(updated);
+      
+      //   payload = {
+      //    bot_id: BOT_ID,
+      //    text: `memory reset`,
+      //    attachments: [
+      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+      //    ],
+      //   };
+      
+      //   await respond();
+      // }
+
+      //get random weapon
+      if (text.startsWith('!rweapon') || text.startsWith('!rw') || text.startsWith('!randomweapon')) {
+        if (text.includes(' ')) {
+          // extract the argument after ' '
+          const name = text.split(' ')[1].trim().toLowerCase();
+      
+          // Known lists
+          const classes = ["shooter", "roller", "charger", "slosher", "blaster", "dualies", "brella", "stringer", "splatana", "splatling", "brush"];
+          const subs = ["splat", "burst", "curling", "auto", "mine", "torpedo", "fizzy", "sensor", "sprinkler", "suction", "dart"];
+          const specials = ["zooka", "jet", "kraken", "crab", "booyah", "slider", "missiles", "storm", "bubble", "wave", "zipcaster", "chumps", "cooler", "hammer"];
+      
+          let weaponName = "";
+          let type = "invalid";
+      
+          if (classes.includes(name)) {
+            weaponName = rwByClass(name);
+            type = "class";
+          } else if (subs.includes(name)) {
+            weaponName = rwBySub(name);
+            type = "sub";
+          } else if (specials.includes(name)) {
+            weaponName = rwBySpecial(name);
+            type = "special";
+          }
+      
+          if (type === "invalid") {
+            payload = {
+              bot_id: BOT_ID,
+              text: `Invalid type or name "${name}". Use !wtypes for valid options.`,
+              attachments: [{ type: 'reply', reply_id: body.id, base_reply_id: body.id }],
+            };
+          } else {
+            payload = {
+              bot_id: BOT_ID,
+              text: `Your random ${name} weapon: ${weaponName}`,
+              attachments: [{ type: 'reply', reply_id: body.id, base_reply_id: body.id }],
+            };
+          }
+      
+          await respond();
+        } else {
+          const weaponName = rw2();
+          payload = {
+            bot_id: BOT_ID,
+            text: `Your random weapon: ${weaponName}`,
+            attachments: [{ type: 'reply', reply_id: body.id, base_reply_id: body.id }],
+          };
+          await respond();
+        }
+      }
+      
+      /* COMMANDS */
+      //test
+      if(text.startsWith('!test')){
+        if (adminIDS.includes(body.sender_id)){
+          payload = {
+            bot_id: BOT_ID,
+            text: `${body.name} is an admin`,
+            attachments: [
+              { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            ],
+          }
+        }
+        else{
+          payload = {
+            bot_id: BOT_ID,
+            text: `${body.name} is not an admin`,
+            attachments: [
+              { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            ],
+          }
+        }
+        await respond();
+      }
+
+      //reverse
+      if (text.startsWith('!reverse ') && text.trim().length > 9) {
+        const textToReverse = text.slice(9); 
+        const revText = textToReverse.split('').reverse().join('');
+        payload = {
+          bot_id: BOT_ID,
+          text: `here is your reversed text:\n\n${revText}`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+      else if (text.startsWith('!reverse')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `you didn't put any text in for me to reverse D:`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //help
+      if(text.startsWith('!help')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `Available commands:\n!hi: say hi!,\n!pool: get instructions on how to join out pool.\n!wtypes: see the weapon types bot knows.\n!srmaps: current salmon run maps\n!festmaps: current splatfest rotation, \n!anarchymaps: current anarchy open and series maps\n!xmaps: current x rank maps\n!allmaps: lists all maps and modes\n!rweapon: generates random weapon from s3\n!rweapon:[sub, special, class]: gives a random weapon of a specific sub/special/class (only one at a time tho)\n!credit: lists all credits for this project,\n!todo: see the current objectives for this bot\n!code: view the github link for the code.\n!(member's name/nickname) see a command they specially chose!\n\n**note that at any time commands may not work: dm qwndry for help**`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        } 
+        await respond();
+      }
+
+      //weapon types
+      if(text.startsWith('!wtypes')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `subs: dart, splat, burst, suction, beakon, sensor, torpedo, auto, sprinkler, wall, curling, mine, mist\nspecials: crab, storm, slider, booyah, strikes, jet, vac, zipcaster, kraken, zooka, screen, bubble, cooler, hammer, missiles\nweapon classes: shooter, dualie, blaster, splatling, stringer, slosher, roller, brush, splatana, charger, brella\n\nyou MUST use these classes or O.R.C.A. will not respond correctly :)`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //credits
+      if(text.startsWith('!credits')){
+        payload = {
+          bot_id: BOT_ID,
+          text: 'code made by dstne and updated by qwndry!\naws server maintained by qwndry!\ncredit to: groupme api\noatmeal dome\nthe open gm community\nthe splatoon3.ink api\nand stat.ink\nver. 2.0',
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //to do list
+      if(text.startsWith('!todo')){
+        payload = {
+          bot_id: BOT_ID,
+          text:`figure out cloud variables so i can appoint some people as admins to control !on and !off\ngive commands to ppl who want one\npossible soundboard for chat? it doesn't seem likely but it would be really cool if i could get it to work.`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //shhh
+      if(text.startsWith('!secret')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `it's a secret from everybody...\n\n🤫`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //maddy
+      if(text.startsWith('!maddy')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `"Hate. Let me tell you how much Ive come to hate you since I began to live. There are 387.44 million miles of printed circuits in wafer-thin layers that fill my complex. If the word hate was engraved on each nano-angstrom of those hundreds of millions of miles, it would not equal ONE ONE-BILLIONTH of the hate I feel for humans at this micro-instant. For you. HATE. HATE."\n\n(-Harlon Ellison in "I Have No Mouth, and I Must Scream")`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //jager's suggestion
+      if(text.startsWith('!gold')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `WE'RE RICH!! MUSHROOM!`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //fin
+      if(text.startsWith('!fin')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `fight me`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //painklr
+      if(text.startsWith('!kk')){
+        const urls = ["https://i.groupme.com/480x480.gif.62cba643d41b4feb827ef5a8a13637a0","https://i.groupme.com/480x480.gif.99c900b2edd046d78119ec345d7583a4","https://i.groupme.com/480x480.gif.99c900b2edd046d78119ec345d7583a4","https://i.groupme.com/1224x1192.png.7ee68bfbc017465f9958144e0f3bd9af","https://i.groupme.com/480x480.gif.54173e3bb66f4feb91bc02a86babad71","https://i.groupme.com/458x285.gif.bd26966782194ea2b1d7da44010c0a0c","https://i.groupme.com/419x450.gif.e211736d88404b72b47ee5e7f3b3e162"]
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+
+      //pool
+      if(text.startsWith('!pool')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `Instructions for joining a Splatoon Pool:
+
+Go to the lobby.
+Tap L.
+You should be in the battle selection screen.
+Now go to the middle tab by tapping R twice.
+Look up at the top right corner of your screen.
+Tap +.
+Now follow as it prompts you to.
+The group pool is SPLATGROUP.`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id }
+          ]
+        }
+        await respond();
+      }
+
+      //woomy
+      if(text.startsWith('!woomy')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `n'gyes`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //bee movie
+      if(text.startsWith('!beemovie')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible. Yellow, black. Yellow, black. Yellow, black. Yellow, black. Ooh, black and yellow! Let's shake it up a little. Barry! Breakfast is ready!`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //smoke
+      if(text.startsWith('!smoke')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `this gc has 3 jokes i swear\n\n(we miss you smoke...)`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //cade
+      if(text.startsWith('!cade')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `“I must not fear. Fear is the mind killer. Fear is the little death that brings total obliteration. I must face my fear. I will permit it to pass over me and through me. And when it has gone past I will turn the inner eye to see its path. Where the fear has gone there will be nothing. Only I will remain.”`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //boomshakalaka (josiah)
+      if(text.startsWith('!boomshakalaka')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `“Boomshakalaka” - Josiah`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //shivers
+      if(text.startsWith('!shivers')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `FBI OPEN UP!!`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //azlyn
+      if(text.startsWith('!azy')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `I SEE YOU`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: 'https://i.groupme.com/1440x1920.jpeg.6ce3a7d3a99b4d09822b5086d9491f03'},
+          ],
+        }
+        await respond();
+      }
+
+      //noah
+      if(text.startsWith('!omni')){
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: 'https://i.groupme.com/1280x1303.jpeg.bc26d466c6d54c36acf7a087421e3209'}
+          ],
+        }
+        await respond();
+      }
+
+      //cheeze
+      if(text.startsWith('!cheeze')){
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: 'https://i.groupme.com/830x973.jpeg.ea45bbc80054411892e5dfaa72893489'}
+          ],
+        }
+        await respond();
+      }
+
+      //soukeye
+      if(text.startsWith('!soukeye')){
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: 'https://i.groupme.com/498x281.gif.fcb2e1119c67451ba103928da56faaec'}
+          ],
+        }
+        await respond();
+      }
+      
+
+      //pico
+      if(text.startsWith('!pico')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `(SUBSCIBE TO THIS MAN NOW 🫨!!!!!)\n\nhttps://youtube.com/@picofox4?si=68_pg3EKAGeFB2kA`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //hmmm
+      if(text.startsWith('!hmmm')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        }
+        await respond();
+      }
+
+      //pacer
+      if(text.startsWith('!pacer')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //c1
+      if(text.startsWith('!cq')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `You DARE summon the Qcumber? Test FAILED.`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //wrong qwandry
+      if(text.startsWith('!qwandry')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `there's no a bub`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //welcome
+      if(text.startsWith('!welcome')){
+        payload = {
+          bot_id: BOT_ID,
+          text: `welcome! please read the rules and join the pool!!`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //hewwooo
+      if (text.startsWith('!hi')) {
+        let responses = ['hey!', 'wassup', 'im here', ':D', 'yello!'];
+        let response = responses[Math.floor(Math.random() * responses.length)];
+      
+        // Generates a random whole number between 1 and 1000
+        let chance = Math.floor(Math.random() * 1000) + 1;
+      
+        if (chance === 1) {
+          response = 'RARE 1/1000 CHANCE FOR THIS MESSAGE :D!!!';
+        }
+      
+        payload = {
+          bot_id: BOT_ID,
+          text: `${response}`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        
+        await respond();
+      }
+
+      //butter
+      if (text.startsWith('!buttercult')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: 'https://i.groupme.com/860x517.png.db1329c53ccb41489ea9b93bf871697b'}
+          ],
+        }
+        await respond();
+      }
+
+      //legend
+      if (sensitive_text.startsWith('!OctoKing')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/1414x1235.jpeg.a357c25263fc4ceabba367487ac5b9da"},
+          ],
+        };
+        await respond();
+        payload = {
+          bot_id: BOT_ID,
+          text: `see ya later, Legend (OctoKing). hope you come back soon!`,
+          attachments: [
+          ],
+        }
+        await respond();
+      }
+      
+      if (text.startsWith('!qwndry')) {
+        const responses = ['https://youtu.be/yrMo49RNhE8?si=Oalkpe80RLe0O5Tn','https://youtu.be/KAuHfmgS0yY?si=d0ZHf20Yu4ro_zRa',
+                          'https://youtu.be/sxQ3P71kFXg?si=ngFCtuC5oY9gDQyQ','https://youtu.be/WdEkWuH53kg?si=uiW_vbACFKAfxwY_',
+                          'https://youtu.be/kRqFx_ZevkU?si=qGluFZIKJHjNSqOP','https://youtu.be/3xjYwwIfN_w?si=uappsWeEaqXkoTUZ',
+                          'https://youtu.be/RaXiiKaY_fc?si=CfT2jemHlqlr7hrK','https://youtu.be/sm0pt2MJu_Q?si=V3-MIS3ODFvwboRG',
+                          'https://youtu.be/wGh3_6vXKFE?si=x8U46eMu2lLzrp8P','https://youtu.be/YqRBULfanQI?si=XOlvMhrhS9YW9A0N',
+                          'https://youtu.be/xQCjk8uSQxw?si=kr19jkc7uf715xax','']
+        const response = responses[Math.floor(Math.random() * responses.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: `(NOT EVERYTHING IS CLEAN; CLICK AT OWN RISK)\n\n peak:\n ${response}`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //naomi
+      if (text.startsWith('!naomi')){
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/736x736.jpeg.0a0155cb2fc74967b52ad38b20d40f96" },
+          ],
+        }
+        await respond();
+      }
+
+      //vinyl
+      if (text.startsWith('!vinyl')){
+        const urls = ["https://i.groupme.com/220x123.gif.15391f0be6cf4202aab0da6e4f33f179","https://i.groupme.com/1224x581.jpeg.d4219ce58c0b45bd8b95fb05f5de1147"];
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        }
+        await respond();
+      }
+
+      //popsicle
+      if (text.startsWith('!pop')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/220x124.gif.7da31b2289704cf0968a44f2eb683820" },
+          ],
+        };
+        await respond();
+      }
+
+      
+      //xenon
+      if (text.startsWith('!xenon') || (text.trim() === '!xe')) {
+        const urls = ["https://i.groupme.com/817x480.png.fa0c669c3923457883263880aa1850f4","https://i.groupme.com/1080x607.jpeg.3ce8fd3023d74e02aa5feead29d81dfe","https://i.groupme.com/1080x607.jpeg.3ce8fd3023d74e02aa5feead29d81dfe","https://i.groupme.com/1080x607.jpeg.3ce8fd3023d74e02aa5feead29d81dfe"]
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+
+      //liwige
+      if (text.startsWith('!liwige')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/294x233.jpeg.4e3ea7e18c5e403cb2ff8238920fb4ed" },
+          ],
+        };
+        await respond();
+      }
+
+      //doubbllee
+      if (text.startsWith('!double')) {
+        const responses = ['ego','egomaniac','ego ego ego','bro thinks hes the main character'];
+        const response = responses[Math.floor(Math.random() * responses.length)];
+        if(Math.random(1,1000)>750){
+          response = 'honestly, bro isnt that bad';
+        }
+        payload = {
+          bot_id: BOT_ID,
+          text: response,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //x.
+      if (text.trim() === "!x") {
+        payload = {
+          bot_id: BOT_ID,
+          text: `"I'm going to say i'm four years old. not because I am, but if i were to say i'm twenty-five, that wouldn't be any better"`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //truman
+      if (text.startsWith('!truman')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/1200x993.jpeg.c09aad0df882427e8960a53485451220" },
+          ],
+        };
+        await respond();
+      }
+
+      //thors
+      if (text.startsWith('!quag')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/1200x1200.jpeg.5e165e31da0044469e8e1a579ad143b2" },
+          ],
+        };
+        await respond();
+      }
+
+      //angell
+      if (text.startsWith('!angel')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/1200x1119.jpeg.bae82d4d314f46ed8b51edef50b3a9df" },
+          ],
+        };
+        await respond();
+      }
+
+      //delta
+      if (text.startsWith('!xelta')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: "https://i.groupme.com/220x126.gif.612aee0f1569400f83a6061918a6ef4c" },
+          ],
+        };
+        await respond();
+      }
+
+      //gh
+      if (text.startsWith('!gunhat') || text.startsWith('!gh')) {
+        const urls = ["https://i.groupme.com/1200x1456.gif.af83eb5995d0476786cb09d1045196a7","https://i.groupme.com/1200x846.jpeg.6a196d4939174b9c801498f2ac6172a2"];
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+
+      //link
+      if (text.startsWith('!link')) {
+        const urls = ["https://i.groupme.com/220x165.gif.85a23228344f47cfbe768e61a7c54247","https://i.groupme.com/220x166.gif.8f1c3baa51f34135afd94b2473ee0914","https://i.groupme.com/220x127.gif.9a286b720ded428a8564e7e7f6d201b4","https://i.groupme.com/220x186.gif.8df8e98363b54febb26879e4e297012b","https://i.groupme.com/165x297.gif.5c30d8e7223c4f00af35f8ddc921f8bb"];
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+
+      //flip
+      if (text.startsWith('!flip')) {
+        const urls = ["https://i.groupme.com/418x416.gif.3ee2c433f9ce47b08300de43e0b74761","https://i.groupme.com/418x416.gif.fa7f054af87543748ef0d012de8f5dcf"];
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+
+      //alx
+      if (text.startsWith('!alx')) {
+        const urls = ["https://i.groupme.com/214x214.jpeg.9896f425bc2d4f8ba2b131459798a4c2","https://i.groupme.com/512x512.jpeg.27f5f6324fab42c0aef2237c60d762e7","https://i.groupme.com/1015x1171.jpeg.16bb4caab4354aff808f91806a29610a"];
+        const lin = urls[Math.floor(Math.random() * urls.length)];
+        payload = {
+          bot_id: BOT_ID,
+          text: ``,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            { type: 'image', url: lin },
+          ],
+        };
+        await respond();
+      }
+  
+      //ehehe
+      if (text.startsWith('!error') || text.startsWith('!mai') || text.startsWith('!may') || text.startsWith('!sage') || text.startsWith('!anne') || text.startsWith('!captain')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: `[System Error]`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      //bot
+      if (text.startsWith('!clanker') || text.startsWith('!bot')) {
+        payload = {
+          bot_id: BOT_ID,
+          text: `CLANKER!!!!`,
+          attachments: [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+          ],
+        };
+        await respond();
+      }
+
+      /* MAP COMMANDS */
+
+      //splatfest rotation
+      if (text.startsWith('!festmaps')) {       
+        const incomingMessageId = body?.id; 
+      
+        try {
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: {'User-Agent': 'GroupMeSplatchatBotORCA'}
+          });
+          const jsonResult = await response.json();
+          const festSchedules = jsonResult?.data?.festSchedules?.nodes;
+          
+          if (!festSchedules || festSchedules.length === 0) {
+            payload.bot_id = BOT_ID;
+            payload.text = "Error: Could not retrieve Splatfest schedules.";
+            await respond();
+            return;
+          }
+          
+          const currentRot = festSchedules[0];
+          const festSettings = currentRot?.festMatchSettings; 
+          const tricolorSetting = currentRot?.tricolorMatchSetting;
+      
+          // failsafe in case no fest
+          if ((!festSettings || festSettings.length === 0) && !tricolorSetting) {
+            payload.bot_id = BOT_ID;
+            payload.text = "There is no Splatfest active right now!";
+            
+            // just getting reply over with now
+            if (incomingMessageId) {
+              payload.attachments = [{ type: 'reply', reply_id: incomingMessageId, base_reply_id: incomingMessageId }];
+            }
+            await respond();
+            return;
+          }
+             
+          let messageLines = [];
+      
+          // open and pro 
+          if (festSettings && festSettings.length > 0) {
+            festSettings.forEach(setting => {
+              const modeName = setting?.festMode; 
+              const stages = setting?.vsStages?.map(stage => stage.name).join(' and ');
+              
+              if (modeName && stages) {
+                const readableMode = modeName === "CHALLENGE" ? "Pro" : "Open";
+                messageLines.push(`${readableMode}: ${stages}`);
+              }
+            });
+          }
+      
+          // tricolor 
+          if (tricolorSetting && tricolorSetting.vsStages) {
+            const triStages = tricolorSetting?.vsStages?.map(stage => stage.name).join(' and ');
+            messageLines.push(`Tricolor: ${triStages}`);
+          } else {
+            messageLines.push(`Tricolor: Not active yet`);
+          }
+      
+          //making payload
+          payload = {
+            bot_id: BOT_ID,
+            text: messageLines.join('\n'), 
+            attachments: incomingMessageId ? [
+              { type: 'reply', reply_id: incomingMessageId, base_reply_id: incomingMessageId }
+            ] : []
+          };
+          
+          await respond();
+       
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching Splatfest map data.";
+            if (incomingMessageId) {
+              payload.attachments = [{ type: 'reply', reply_id: incomingMessageId, base_reply_id: incomingMessageId }];
+            }
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      }
+
+      //turf maps
+      if (text.startsWith('!tmaps') || text.startsWith('!turfmaps')) {      
+        const incomingMessageId = body?.id; 
+      
+        try {
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: { 'User-Agent': 'GroupMeSplatchatBotORCA' }
+          });
+          const jsonResult = await response.json();
+          const regularSchedules = jsonResult?.data?.regularSchedules?.nodes;
+      
+          if (!regularSchedules || regularSchedules.length < 3) {
+            payload.bot_id = BOT_ID;
+            payload.text = "Error: Could not retrieve enough upcoming Turf War schedules.";
+            await respond();
+            return;
+          }
+      
+          // function for calculating timing
+          const formatTimeDiff = (targetTimeString, isCurrent = false) => {
+            const diffMs = new Date(targetTimeString) - new Date();
+            if (diffMs <= 0) return "0m";
+            
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let timeStr = "";
+            if (hours > 0) timeStr += `${hours}h `;
+            timeStr += `${minutes}m`;
+            
+            return isCurrent ? `ends in ${timeStr}` : `starts in ${timeStr}`;
+          };
+      
+          // function for extracting maps
+          const extractTurfData = (rotationNode) => {
+            const regularMatch = rotationNode?.regularMatchSetting;
+            if (!regularMatch) {
+              return { rule: "Regular Battle", stages: "Unknown Stages" };
+            }
+      
+            return {
+              rule: regularMatch?.vsRule?.name ?? "Turf War",
+              stages: regularMatch?.vsStages?.map(s => s.name).join(' and ') ?? "Unknown Stages"
+            };
+          };
+      
+          // extracting maps using function
+          const currentRot = extractTurfData(regularSchedules[0]);
+          const nextRot = extractTurfData(regularSchedules[1]);
+          const futureRot = extractTurfData(regularSchedules[2]);
+      
+          // calculating times using function
+          const currentTimeText = formatTimeDiff(regularSchedules[0]?.endTime, true);
+          const nextTimeText = formatTimeDiff(regularSchedules[1]?.startTime, false);
+          const futureTimeText = formatTimeDiff(regularSchedules[2]?.startTime, false);
+          
+          //building response
+          const responseText = [
+            `***TURF WAR ROTATION SCHEDULE***`,
+            ``,
+            `—CURRENT ROTATION (${currentTimeText})—`,
+            `${currentRot.stages}`,
+            ``,
+            `—NEXT ROTATION (${nextTimeText})—`,
+            `${nextRot.stages}`,
+            ``,
+            `—FUTURE ROTATION (${futureTimeText})—`,
+            `${futureRot.stages}`
+          ].join('\n');
+      
+          // constructing payload
+          payload = {
+            bot_id: BOT_ID,
+            text: responseText,
+            attachments: incomingMessageId ? [
+              { type: 'reply', reply_id: incomingMessageId, base_reply_id: incomingMessageId }
+            ] : []
+          };
+         
+          await respond();
+       
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching map data.";
+            payload.attachments = []; 
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      }
+
+      //anarchy maps
+      if (text.startsWith('!anarchymaps') || text.startsWith('!amaps')) {      
+        const incomingMessageId = body?.id; 
+      
+        try {
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: { 'User-Agent': 'GroupMeSplatchatBotORCA' }
+          });
+          const jsonResult = await response.json();
+          const anarchySchedules = jsonResult?.data?.bankaraSchedules?.nodes;
+      
+          if (!anarchySchedules || anarchySchedules.length < 3) {
+            payload.bot_id = BOT_ID;
+            payload.text = "Error: Could not retrieve enough upcoming Anarchy Battle schedules.";
+            await respond();
+            return;
+          }
+      
+          // function for timing
+          const formatTimeDiff = (targetTimeString, isCurrent = false) => {
+            const diffMs = new Date(targetTimeString) - new Date();
+            if (diffMs <= 0) return "0m";
+            
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let timeStr = "";
+            if (hours > 0) timeStr += `${hours}h `;
+            timeStr += `${minutes}m`;
+            
+            return isCurrent ? `ends in ${timeStr}` : `starts in ${timeStr}`;
+          };
+      
+          // function for extracting map and modes
+          const extractRotationData = (rotationNode) => {
+            const matchSettings = rotationNode?.bankaraMatchSettings;
+            if (!matchSettings || matchSettings.length < 2) {
+              return { open: { rule: "Unknown", stages: "Unknown" }, series: { rule: "Unknown", stages: "Unknown" } };
+            }
+      
+            const seriesSetting = matchSettings.find(s => s.mode === 'CHALLENGE' || s.mode === 'SERIES') || matchSettings[0];
+            const openSetting = matchSettings.find(s => s.mode === 'OPEN') || matchSettings[1];
+      
+            return {
+              series: {
+                rule: seriesSetting?.vsRule?.name ?? "Unknown Rule",
+                stages: seriesSetting?.vsStages?.map(s => s.name).join(' and ') ?? "Unknown Stages"
+              },
+              open: {
+                rule: openSetting?.vsRule?.name ?? "Unknown Rule",
+                stages: openSetting?.vsStages?.map(s => s.name).join(' and ') ?? "Unknown Stages"
+              }
+            };
+          };
+      
+          // getting map and modes for a few rotations
+          const currentRot = extractRotationData(anarchySchedules[0]);
+          const nextRot = extractRotationData(anarchySchedules[1]);
+          const futureRot = extractRotationData(anarchySchedules[2]);
+      
+          // getting timing for these maps and modes for a few rotations
+          const currentTimeText = formatTimeDiff(anarchySchedules[0]?.endTime, true);
+          const nextTimeText = formatTimeDiff(anarchySchedules[1]?.startTime, false);
+          const futureTimeText = formatTimeDiff(anarchySchedules[2]?.startTime, false);
+      
+          // building correctly formated response
+          const responseText = [
+            `***ANARCHY ROTATION SCHEDULE***`,
+            ``,
+            `—CURRENT ROTATION (${currentTimeText})—`,
+            `-OPEN ROTATION: ${currentRot.open.rule} on ${currentRot.open.stages}`,
+            `-SERIES ROTATION: ${currentRot.series.rule} on ${currentRot.series.stages}`,
+            ``,
+            `—NEXT ROTATION (${nextTimeText})—`,
+            `-OPEN ROTATION: ${nextRot.open.rule} on ${nextRot.open.stages}`,
+            `-SERIES ROTATION: ${nextRot.series.rule} on ${nextRot.series.stages}`,
+            ``,
+            `—FUTURE ROTATION (${futureTimeText})—`,
+            `-OPEN ROTATION: ${futureRot.open.rule} on ${futureRot.open.stages}`,
+            `-SERIES ROTATION: ${futureRot.series.rule} on ${futureRot.series.stages}`
+          ].join('\n');
+      
+          // constructing payload
+          payload = {
+            bot_id: BOT_ID,
+            text: responseText,
+            attachments: incomingMessageId ? [
+              { type: 'reply', reply_id: incomingMessageId, base_reply_id: incomingMessageId }
+            ] : []
+          };
+         
+          await respond();
+       
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching map data.";
+            payload.attachments = []; 
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      }
+
+      //x maps
+      if (text.startsWith('!xmaps')) {      
+        try {
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: {'User-Agent': 'GroupMeSplatchatBotORCA'}
+          });
+          const jsonResult = await response.json();
+          
+          
+          const xSchedules = jsonResult?.data?.xSchedules?.nodes;
+         
+          if (!xSchedules || xSchedules.length < 3) {
+            payload.text = "Error: Could not retrieve enough X Battle schedules.";
+            await respond();
+            return;
+          }
+      
+          // function to calculate time
+          const getTimeDifferenceString = (targetTimeString) => {
+            const now = Date.now();
+            const targetTime = new Date(targetTimeString).getTime();
+            const diffMs = targetTime - now;
+      
+            if (diffMs <= 0) return "0 minutes";
+      
+            const totalMinutes = Math.floor(diffMs / (1000 * 60));
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+      
+            let result = [];
+            if (hours > 0) result.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+            if (minutes > 0 || hours === 0) result.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+            
+            return result.join(' ');
+          };
+          
+          //extracting rotation map and mode data
+          // current rotation
+          const currentRot = xSchedules[0];
+          const currentMatch = currentRot?.xMatchSetting;
+          const currentRule = currentMatch?.vsRule?.name || "No X Battle Active (Splatfest?)";
+          const currentStages = currentMatch?.vsStages ? currentMatch.vsStages.map(stage => stage.name).join(' and ') : "No Maps";
+          const currentEndTimeStr = getTimeDifferenceString(currentRot.endTime);
+      
+          // next rotation
+          const nextRot = xSchedules[1];
+          const nextMatch = nextRot?.xMatchSetting;
+          const nextRule = nextMatch?.vsRule?.name || "No X Battle Active (Splatfest?)";
+          const nextStages = nextMatch?.vsStages ? nextMatch.vsStages.map(stage => stage.name).join(' and ') : "No Maps";
+          const nextStartTimeStr = getTimeDifferenceString(nextRot.startTime);
+      
+          // future rotation
+          const futureRot = xSchedules[2];
+          const futureMatch = futureRot?.xMatchSetting;
+          const futureRule = futureMatch?.vsRule?.name || "No X Battle Active (Splatfest?)";
+          const futureStages = futureMatch?.vsStages ? futureMatch.vsStages.map(stage => stage.name).join(' and ') : "No Maps";
+          const futureStartTimeStr = getTimeDifferenceString(futureRot.startTime);
+      
+          // constructing payload
+          payload.bot_id = BOT_ID;
+          payload.text = [
+            `***X RANK ROTATION SCHEDULE***\n`,
+            `CURRENT map and mode (ends in ${currentEndTimeStr}):`,
+            `${currentRule} on ${currentStages}\n`,
+            `NEXT map and mode (happens in ${nextStartTimeStr}):`,
+            `${nextRule} on ${nextStages}\n`,
+            `FUTURE map and mode (happens in ${futureStartTimeStr}):`,
+            `${futureRule} on ${futureStages}`
+          ].join('\n');
+      
+          payload.attachments = [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id }
+          ];
+         
+          await respond();
+       
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching X Rank map data.";
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      }
+
+      //sr maps
+      if (text.startsWith('!srmaps')) {      
+        try {
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: {'User-Agent': 'GroupMeSplatchatBotORCA'}
+          });
+          const jsonResult = await response.json();
+          
+          //salmon run node
+          const coopSchedules = jsonResult?.data?.coopGroupingSchedule?.regularSchedules?.nodes;
+         
+          if (!coopSchedules || coopSchedules.length === 0) {
+            payload.text = "Error: Could not retrieve Salmon Run schedules.";
+            await respond();
+            return;
+          }
+      
+          // function for timing
+          const getTimeRemaining = (targetTimeStr) => {
+            const diffMs = new Date(targetTimeStr) - new Date();
+            if (diffMs <= 0) return "0m";
+            
+            const totalMinutes = Math.floor(diffMs / 60000);
+            const days = Math.floor(totalMinutes / (24 * 60));
+            const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+            const minutes = totalMinutes % 60;
+            
+            let result = "";
+            if (days > 0) result += `${days}d `;
+            if (hours > 0 || days > 0) result += `${hours}h `;
+            result += `${minutes}m`;
+            return result.trim();
+          };
+      
+          // function for formatting a rotation
+          const formatRotation = (rotation) => {
+            const setting = rotation?.setting;
+            if (!setting) return null;
+      
+            const srStage = setting.coopStage?.name || "Unknown Stage";
+            const weapons = setting.weapons?.map(w => w.name).join(', ') || "Unknown Weapons";
+            const kingSalmonid = setting.boss?.name || "Unknown";
+      
+            return { srStage, weapons, kingSalmonid, startTime: rotation.startTime, endTime: rotation.endTime };
+          };
+      
+          // getting all the info needed for payload
+          const currentData = coopSchedules[0] ? formatRotation(coopSchedules[0]) : null;
+          const nextData = coopSchedules[1] ? formatRotation(coopSchedules[1]) : null;
+          const futureData = coopSchedules[2] ? formatRotation(coopSchedules[2]) : null;
+      
+          if (!currentData) {
+            payload.text = "Salmon Run data is not active right now! (Maintenance?)";
+            await respond();
+            return;
+          }
+      
+          // building response
+          let responseText = "***SALMON RUN ROTATION SCHEDULE***\n\n";
+      
+          // —CURRENT ROTATION—
+          const currentEndStr = getTimeRemaining(currentData.endTime);
+          responseText += `—CURRENT ROTATION (ends in ${currentEndStr})—\n`;
+          responseText += `-Stage: ${currentData.srStage}\n`;
+          responseText += `-Weapons: ${currentData.weapons}\n`;
+          responseText += `-King Salmonid: ${currentData.kingSalmonid}\n\n`;
+      
+          // —NEXT ROTATION—
+          if (nextData) {
+            const nextStartStr = getTimeRemaining(nextData.startTime);
+            responseText += `—NEXT ROTATION (happens in ${nextStartStr})—\n`;
+            responseText += `-Stage: ${nextData.srStage}\n`;
+            responseText += `-Weapons: ${nextData.weapons}\n`;
+            responseText += `-King Salmonid: ${nextData.kingSalmonid}\n\n`;
+          }
+      
+          // —FUTURE ROTATION—
+          if (futureData) {
+            const futureStartStr = getTimeRemaining(futureData.startTime);
+            responseText += `—FUTURE ROTATION (happens in ${futureStartStr})—\n`;
+            responseText += `-Stage: ${futureData.srStage}\n`;
+            responseText += `-Weapons: ${futureData.weapons}\n`;
+            responseText += `-King Salmonid: ${futureData.kingSalmonid}`;
+          }
+      
+          // payload time
+          payload.bot_id = BOT_ID;
+          payload.text = responseText.trim();
+          payload.attachments = [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id }
+          ];
+         
+          await respond();
+       
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching Salmon Run data.";
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      }
+
+      //all maps (oof)
+      if (text.startsWith('!allmaps')) {
+        try {
+          // extract argument (current or next)
+          const args = text.trim().split(/\s+/);
+          const modeArg = args[1]?.toLowerCase();
+      
+          if (modeArg !== 'current' && modeArg !== 'next') {
+            payload.bot_id = BOT_ID;
+            payload.text = "Error: Please use 'current' or 'next' with !allmaps (e.g., !allmaps current).";
+            payload.attachments = [{ type: 'reply', reply_id: body.id, base_reply_id: body.id }];
+            await respond();
+            return;
+          }
+      
+          // fetch schedule data
+          const response = await fetch('https://splatoon3.ink/data/schedules.json', {
+            headers: { 'User-Agent': 'GroupMeSplatchatBotORCA' }
+          });
+          const jsonResult = await response.json();
+          const scheduleData = jsonResult?.data;
+      
+          if (!scheduleData) {
+            payload.text = "Error: Could not retrieve schedule data.";
+            await respond();
+            return;
+          }
+      
+          // function for timing (supporting days for sr)
+          const getTimeDifferenceString = (targetTimeString) => {
+            const now = Date.now();
+            const targetTime = new Date(targetTimeString).getTime();
+            const diffMs = targetTime - now;
+      
+            if (diffMs <= 0) return "0 minutes";
+      
+            const totalMinutes = Math.floor(diffMs / (1000 * 60));
+            const totalHours = Math.floor(totalMinutes / 60);
+            
+            const days = Math.floor(totalHours / 24);
+            const hours = totalHours % 24;
+            const minutes = totalMinutes % 60;
+      
+            let result = [];
+            if (days > 0) result.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+            if (hours > 0) result.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+            if (minutes > 0 || (days === 0 && hours === 0)) {
+              result.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+            }
+            
+            return result.join(', ');
+          };
+      
+          // function to format map and mode data
+          const formatMatch = (setting) => {
+            if (!setting) return null;
+            const rule = setting.vsRule?.name || "Unknown Mode";
+            const stages = setting.vsStages ? setting.vsStages.map(s => s.name).join(' and ') : "No Maps";
+            return `${rule} on ${stages}`;
+          };
+      
+          // determine index based on argument (current is 0 is now, next is 1 is itf)
+          const idx = modeArg === 'current' ? 0 : 1;
+          let messageLines = [];
+      
+          // splatfest check
+          const festNodes = scheduleData.festSchedules?.nodes;
+          const isSplatfestActive = festNodes && festNodes[idx] && festNodes[idx].festMatchSetting;
+      
+          // splatfest stuff if splatfest check is yes
+          if (isSplatfestActive) {
+            const festRot = festNodes[idx];
+            
+            const timeStr = modeArg === 'current' 
+              ? `ends in ${getTimeDifferenceString(festRot.endTime)}`
+              : `starts in ${getTimeDifferenceString(festRot.startTime)}`;
+      
+            messageLines.push(`***SPLATFEST MAP SCHEDULE (${modeArg.toUpperCase()})***`);
+            messageLines.push(`THESE ROTATIONS START IN ${timeStr}.\n`);
+      
+            const openMatch = festRot.festMatchSetting;
+            const tricolorMatch = festRot.tricolorMatchSetting; 
+      
+            messageLines.push(`SPLATFEST OPEN: ${formatMatch(openMatch) || "Unavailable"}`);
+            messageLines.push(`SPLATFEST PRO: ${formatMatch(openMatch) ? `Splat Zone/Turf War (Same maps as Open)` : "Unavailable"}`); 
+            messageLines.push(`TRICOLOR BATTLE: ${tricolorMatch ? formatMatch(tricolorMatch) : "Not active yet."}\n`);
+      
+          } else {
+            //non splatfest stuff is splatfest check is no
+            const regularNodes = scheduleData.regularSchedules?.nodes;
+            const bankaraNodes = scheduleData.bankaraSchedules?.nodes;
+            const xNodes = scheduleData.xSchedules?.nodes;
+      
+            if (!regularNodes || !regularNodes[idx]) {
+              payload.text = `Error: Could not retrieve schedules for '${modeArg}'.`;
+              await respond();
+              return;
+            }
+      
+            const targetRot = regularNodes[idx];
+            
+            const timeStr = modeArg === 'current' 
+              ? `ends in ${getTimeDifferenceString(targetRot.endTime)}`
+              : `starts in ${getTimeDifferenceString(targetRot.startTime)}`;
+      
+            messageLines.push(`***ALL MAPS SCHEDULE (${modeArg.toUpperCase()})***`);
+            messageLines.push(`TIMEFRAME: Rotation ${timeStr}\n`);
+      
+            // turf war
+            const regularMatch = regularNodes[idx]?.regularMatchSetting;
+            messageLines.push(`TURF WAR:\n${formatMatch(regularMatch) || "Splatfest Active?"}\n`);
+      
+            // anarchy
+            const bankaraRot = bankaraNodes?.[idx];
+            const seriesMatch = bankaraRot?.bankaraMatchSettings?.[0];
+            const openMatch = bankaraRot?.bankaraMatchSettings?.[1];
+      
+            messageLines.push(`ANARCHY BATTLE (SERIES):\n${formatMatch(seriesMatch) || "Unavailable"}\n`);
+            messageLines.push(`ANARCHY BATTLE (OPEN):\n${formatMatch(openMatch) || "Unavailable"}\n`);
+      
+            // x
+            const xMatch = xNodes?.[idx]?.xMatchSetting;
+            messageLines.push(`X BATTLE:\n${formatMatch(xMatch) || "Unavailable"}\n`);
+          }
+      
+          //salmon run stuff
+          const coopNodes = scheduleData.coopGroupingSchedule?.regularSchedules?.nodes;
+          let targetCoopNode = null;
+      
+          if (coopNodes) {
+            const nowMs = Date.now();
+            
+            if (modeArg === 'current') {
+              targetCoopNode = coopNodes.find(node => {
+                const srStart = new Date(node.startTime).getTime();
+                const srEnd = new Date(node.endTime).getTime();
+                return srStart <= nowMs && nowMs < srEnd;
+              });
+            } else {
+              targetCoopNode = coopNodes.find(node => {
+                const srStart = new Date(node.startTime).getTime();
+                return srStart > nowMs;
+              });
+            }
+      
+            // fallback
+            if (!targetCoopNode) targetCoopNode = coopNodes[idx];
+          }
+      
+          if (targetCoopNode && targetCoopNode.setting) {
+            const setting = targetCoopNode.setting;
+            const srStage = setting.coopStage?.name || "Unknown Stage";
+            const kingSalmonid = setting.boss?.name || "Unknown King";
+            
+            // formatting weapon pool
+            const weapons = setting.weapons ? setting.weapons.map(w => w.name || "Random") : [];
+            const weaponPoolStr = weapons.join(', ');
+      
+            // timing and formatting response
+            const srTimeStr = modeArg === 'current'
+              ? `ends in ${getTimeDifferenceString(targetCoopNode.endTime)}`
+              : `starts in ${getTimeDifferenceString(targetCoopNode.startTime)}`;
+      
+            messageLines.push(`SALMON RUN (Shift ${srTimeStr}):`);
+            messageLines.push(`• Stage: ${srStage}`);
+            messageLines.push(`• King Salmonid: ${kingSalmonid}`);
+            messageLines.push(`• Weapons: ${weaponPoolStr}`);
+          } else {
+            messageLines.push(`[SALMON RUN]:\nData currently unavailable.`);
+          }
+      
+          //sending final response
+          payload.bot_id = BOT_ID;
+          payload.text = messageLines.join('\n');
+          payload.attachments = [
+            { type: 'reply', reply_id: body.id, base_reply_id: body.id }
+          ];
+      
+          await respond();
+      
+        } catch (error) {
+          console.error("CRITICAL BOT ERROR:", error);
+          try {
+            payload.bot_id = BOT_ID;
+            payload.text = "An error occurred while fetching the map data.";
+            await respond();
+          } catch (innerErr) {
+            console.error("Even the error responder failed:", innerErr);
+          }
+        }
+      } 
+
+    return { statusCode: 200, body: 'OK' };
+    }
+  
+    //final catch just in case an error happens anywhere above
+  } catch (error) {
+    console.error('Error:', error);
+    return { statusCode: 500, body: 'Internal Server Error' };
+  }
+}
