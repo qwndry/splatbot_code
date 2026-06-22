@@ -1,18 +1,19 @@
-const BOT_ID = process.env.GROUPME_BOT_ID //aws has environment variables that you can call with process.env.[ENVIRONMENT VARIABLE]
-let payload = {};
-//fin, qwndry, josiah, pico, gunhat, michael (owner), angel, naomi, shivers, conway
-const adminIDS = [];//you would put admin ids here to do admin things (no im not gonna upload them to github)
-const GROUP_ID = process.env.SPLATCHAT_BOT_ID
-const ACCESS_TOKEN = process.env.GROUPME_ACCESS_TOKEN
-
+const BOT_ID = //not gonna share on github
+let payload = {}; //used for maps (times are still wrong and i hate json messages now)
+//admin names here
+//admin ids here
+const adminIDS = ['not gonna share on github'];
+const qwndryID = 'not gonna share on github';
+const GROUP_ID = not gonna share on github
+const ACCESS_TOKEN = REALLY not gonna share on github
 const silli_keywords = [
-  'job', 'workplace', 'employment', 'salary', 'boss', 
-  'paycheck', 'w-2', ' rent ', 'tax', 'office', 
-  'paperwork', ' hr ', 'human resources', 'commute', 
-  'gas prices', 'resume', '9 to 5', 'application', 
-  'budget', 'mortgage', 'inflation', 'loan', 'loans', 'apy',
+  ' job ', ' workplace ', ' employment ', ' salary ', ' boss ', 
+  ' paycheck ', ' w-2 ', ' rent ', ' tax ', ' office ', 
+  ' paperwork ', ' hr ', ' human resources ', ' commute ', 
+  ' gas prices ', ' resume ', ' 9 to 5 ', ' application ', 
+  ' budget ', ' mortgage ', ' inflation ', ' loan ', ' loans ', ' apy ',
 ];
-let silli_odds = 20 //for now does nothing but itf will do smth :D
+let silli_odds = 10 //for now does nothing but itf will do smth :D
 
 //big weapon list in this form -> [weapon name, sub name, special name, class type]
   const weapons = {
@@ -230,68 +231,6 @@ let silli_odds = 20 //for now does nothing but itf will do smth :D
 
   };
 
-//idk what this is for
-import { SSMClient, GetParameterCommand, PutParameterCommand } from "@aws-sdk/client-ssm";
-
-//s3 was where i was gonna store stuff for !hear so thats why this is here
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-
-//i havent done anything with https yet but it would be usefull to have
-import https from 'https';
-
-const s3Client = new S3Client({}); 
-
-const ssm = new SSMClient({ region: "us-east-2" });
-
-// async function getMemory() {
-//   const cmd = new GetParameterCommand({
-//     Name: "/bot/memory"
-//   });
-
-//   const res = await ssm.send(cmd);
-//   return res.Parameter.Value;
-// }
-
-// async function setMemory(value) {
-//   const cmd = new PutParameterCommand({
-//     Name: "/bot/memory",
-//     Value: value,
-//     Overwrite: true
-//   });
-
-//   await ssm.send(cmd);
-// }
-
-// async function turnOff() {
-//   const val = new PutParameterCommand({
-//     Name: "/bot/on",
-//     Value: "false",
-//     Overwrite: true,
-//     Type: "String"
-//   });
-
-//   await ssm.send(val);
-// }
-
-// async function turnOn() {
-//   const val = new PutParameterCommand({
-//     Name: "/bot/on",
-//     Value: "true",
-//     Overwrite: true,
-//     Type: "String"
-//   });
-
-//   await ssm.send(val);
-// }
-
-// async function isOn() {
-
-//   const cmd = new GetParameterCommand({ Name: "/bot/on" });
-//   const res = await ssm.send(cmd);
-//   console.log("Raw /bot/on value:", res.Parameter.Value);
-//   return res.Parameter.Value === 'true';
-
-// }
 
 async function respond() {
   const response = await fetch('https://api.groupme.com/v3/bots/post', {
@@ -366,12 +305,23 @@ export const handler = async (event) => {
       }
     
       // (pt. 2 building the message based on action) also im not doing }
-      if(action === "edited") {
-        payload = {
-          bot_id: BOT_ID,
-          text: `ᵐᶦⁿᵒʳ ˢᵖᵉˡˡᶦⁿᵍ ᵐᶦˢᵗᵃᵏᵉ`,
-        };
-        await respond();
+      if (action === "edited") {
+        const randnum = Math.floor(Math.random() * 100);
+        if (randnum <= silli_odds){
+          const targetMessageId = body.source_message_id || body.id;
+          payload = {
+            bot_id: BOT_ID,
+            text: `ᵐᶦⁿᵒʳ ˢᵖᵉˡˡᶦⁿᵍ ᵐᶦˢᵗᵃᵏᵉ`,
+            attachments: [
+              {
+                type: "reply",
+                reply_id: targetMessageId, 
+                base_reply_id: targetMessageId
+              }
+            ]
+          };
+          await respond();
+        }
       }
       else if (action === "rejoined") {
         payload = {
@@ -462,24 +412,12 @@ export const handler = async (event) => {
     //retrieve messages
     const sensitive_text = body.text;
     const text = body.text.toLowerCase();
-  
-    // if(text.startsWith('!on') && isAdmin() && !await isOn()){
-    //   payload = {
-    //     bot_id: BOT_ID,
-    //     text: `O.R.C.A. is reactivated`,
-    //     attachments: [
-    //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-    //     ],
-    //   };
-    //   turnOn();
-    //   await respond();
-    // }    
 
     //sillis
     if (!text.startsWith('!')) {
       if (text.includes('crazy')){
-        const randnum = Math.floor(Math.random() * 1000);
-        if (randnum > 850){
+        const randnum = Math.floor(Math.random() * 100);
+        if (randnum <= silli_odds){
           payload = {
             bot_id: BOT_ID,
             text: `crazy?`,
@@ -493,96 +431,52 @@ export const handler = async (event) => {
       else if (silli_keywords.some(silli_keyword => text.includes(silli_keyword)) || (silli_keywords.some(silli_keyword => text.startsWith(silli_keyword)))){
         let responses = ['please censor yourself, your words are EXTREMELY harmful', 'D:', 'boo', '👎', '*sob*','BANNED','thats super scary '];
         let response = responses[Math.floor(Math.random() * responses.length)];
-        payload = {
-          bot_id: BOT_ID,
-          text: response,
-          attachments: [
-            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-          ],
+        const randnum = Math.floor(Math.random() * 100);
+        if (randnum <= silli_odds){
+          payload = {
+            bot_id: BOT_ID,
+            text: response,
+            attachments: [
+              { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            ],
+          }
+          await respond();
         }
-        await respond();
       }
       else if (text.includes(' mods ban ') || (text.startsWith('mods ban ')) || (text === ('mods ban'))){
-        payload = {
-          bot_id: BOT_ID,
-          text: `🫡 🫡 🫡`,
-          attachments: [
-            { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-          ],
+        const randnum = Math.floor(Math.random() * 100);
+        if (randnum <= silli_odds){
+          payload = {
+            bot_id: BOT_ID,
+            text: `🫡 🫡 🫡`,
+            attachments: [
+              { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+            ],
+          }
+          await respond();
         }
-        await respond();
+      }
+      else if (/\b(?:im|i'm|i\s+am)\b\s+([^,.?!:]+)/i.test(text)) {
+        const match = text.match(/\b(?:im|i'm|i\s+am)\b\s+([^,.?!:]+)/i);
+        if (match) {
+          const randnum = Math.floor(Math.random() * 100 + 1);
+          if (randnum <= silli_odds) {
+            const extractedText = match[1].trim(); 
+            payload = {
+              bot_id: BOT_ID,
+              text: `hi ${extractedText}, i'm orca :D`,
+              attachments: [
+                { type: 'reply', reply_id: body.id, base_reply_id: body.id },
+              ],
+            };
+            await respond();
+          }
+        }
       }
     }
 
     //eliminate non commands
     if (text.startsWith('!')){
-
-      // if(text.startsWith('!off') && isAdmin()){
-      //   payload = {
-      //     bot_id: BOT_ID,
-      //     text: `O.R.C.A. will be turned off`,
-      //     attachments: [
-      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-      //     ],
-      //   };
-      //   turnOff();
-      //   await respond();
-      // }
-
-      // if (text.startsWith('!add') && isAdmin()) {
-      //   const extra = body.text.slice(5);
-      
-      //   const old = await getMemory();
-      //   const updated = old + "\n" + extra;
-      
-      //   await setMemory(updated);
-      
-      //   payload = {
-      //     bot_id: BOT_ID,
-      //     text: `updated to: ${updated}`,
-      //     attachments: [
-      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-      //     ],
-      //   };
-      
-      //   await respond();
-      // }
-
-      // if (text.startsWith('!recall')  && isAdmin()) {
-      //   const extra = body.text.slice(7);
-
-      
-      //   const mem = await getMemory();
-      
-      //   payload = {
-      //    bot_id: BOT_ID,
-      //    text: `memory: ${mem}`,
-      //    attachments: [
-      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-      //    ],
-      //   };
-      
-      //   await respond();
-      // }
-
-      // if (text.startsWith('!reset') && isAdmin()) {
-      //   const extra = body.text.slice(7);
-      
-      //   const old = await getMemory();
-      //   const updated = " ";
-      
-      //   await setMemory(updated);
-      
-      //   payload = {
-      //    bot_id: BOT_ID,
-      //    text: `memory reset`,
-      //    attachments: [
-      //      { type: 'reply', reply_id: body.id, base_reply_id: body.id },
-      //    ],
-      //   };
-      
-      //   await respond();
-      // }
 
       //get random weapon
       if (text.startsWith('!rweapon') || text.startsWith('!rw') || text.startsWith('!randomweapon')) {
@@ -711,7 +605,7 @@ export const handler = async (event) => {
       if(text.startsWith('!credits')){
         payload = {
           bot_id: BOT_ID,
-          text: 'code made by dstne and updated by qwndry!\naws server maintained by qwndry!\ncredit to: groupme api\noatmeal dome\nthe open gm community\nthe splatoon3.ink api\nand stat.ink\nver. 2.0',
+          text: 'code made by dstne and updated by qwndry!\nrender server maintained by qwndry!\ncredit to: groupme api\noatmeal dome\nthe open gm community\nthe splatoon3.ink api\nand stat.ink\nver. 2.0',
           attachments: [
             { type: 'reply', reply_id: body.id, base_reply_id: body.id },
           ],
