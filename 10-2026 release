@@ -352,20 +352,20 @@ const shoe_abilities = {
 //various imports to make stuff work that lambda doesn't have pre-installed / give permissions
 import { request } from 'https';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { SSMClient, GetParameterCommand, PutParameterCommand, DeleteParameterCommand, GetParametersByPathCommand } from "@aws-sdk/client-ssm";
 
-import { SSMClient, GetParameterCommand, PutParameterCommand, DeleteParameterCommand } from "@aws-sdk/client-ssm";
-
-const ssm = new SSMClient();
+const ssm = new SSMClient({ region: process.env.AWS_REGION || 'us-east-2' });
+const ssmClient = ssm; 
 
 const s3 = new S3Client({ region: process.env.AWS_REGION || 'us-east-2' });
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { CostExplorerClient, GetCostAndUsageCommand, GetCostForecastCommand } from "@aws-sdk/client-cost-explorer";
 
-//initialize dynamodb client
-const client = new DynamoDBClient({ region: "us-east-2" });
-const docClient = DynamoDBDocumentClient.from(client);
+const dbClient = new DynamoDBClient({ region: process.env.AWS_REGION || "us-east-2" });
+const docClient = DynamoDBDocumentClient.from(dbClient);
+
+import { CostExplorerClient, GetCostAndUsageCommand, GetCostForecastCommand } from "@aws-sdk/client-cost-explorer";
 
 
 //asyncs start here
@@ -1433,7 +1433,9 @@ try {
             } else {
               outputDisp += ` (+ ${mediaString})`; 
             }
-          }    
+          }
+          
+          helpText += `•${creator} - ${trigger} - ${outputDisp}\n`;
         });
     
         payload = {
@@ -2940,7 +2942,7 @@ try {
     if(text.startsWith('!code')){
       payload = {
         bot_id: BOT_ID,
-        text: `**link to github with code (code's in javascript)**:\n\nhttps://github.com/qwndry/splatbot_code`,
+        text: `**link to github with code (code's in javascript)**:\n\nhttps://github.com/qwndry/splatbot_code/tree/main`,
         attachments: [
           { type: 'reply', reply_id: body.id, base_reply_id: body.id },
         ],
